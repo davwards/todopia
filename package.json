@@ -1,0 +1,8 @@
+{
+  "name": "todopia",
+  "description": "A fantasy rpg pretending to be a productivity tool",
+  "author": "David Edwards",
+  "license": "Unlicensed",
+  "workspaces": [],
+  "private": true
+}
