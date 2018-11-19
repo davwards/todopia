@@ -1,0 +1,1 @@
+export const initialPlayerState = () => ({ currencies: {} })
