@@ -5,7 +5,7 @@ import {
   Status,
 } from '../model'
 
-const MISSED_DEADLINE_PENALTY = 10
+const MISSED_DEADLINE_PENALTY = 1
 
 export const checkDeadlines = (
 

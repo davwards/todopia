@@ -1,6 +1,6 @@
 import { TaskRepository, AwardPrize, Status } from '../model'
 
-const TASK_COMPLETION_AWARD = 10
+const TASK_COMPLETION_AWARD = 1
 
 const update = (base, overrides) => Object.assign({}, base, overrides)
 

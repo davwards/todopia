@@ -14,7 +14,7 @@ export interface TaskRepository {
 }
 
 export interface AwardPrize {
-  (playerId: string, xp: number): Promise<void>
+  (playerId: string, prize: number): Promise<void>
 }
 
 export interface PenalizePlayer {
