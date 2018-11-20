@@ -24,3 +24,28 @@ export const awardPlayerWithCurrency = (
   })
 
 )
+
+
+export const damagePlayer = (
+
+  ledger: Ledger,
+
+) => (
+
+  playerId: string,
+  damage: number
+
+) => (
+
+  ledger.addTransaction({
+    comment: `penalizing ${playerId} for missed deadline`,
+    changes: {
+      [playerId]: {
+        currencies: {
+          health: { change: '-', value: 5 * damage },
+        },
+      },
+    },
+  })
+
+)
