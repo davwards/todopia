@@ -1,33 +1,36 @@
-import { Ledger } from '../model'
+import { Ledger, PlayerRepository } from '../model'
 
 export const createPlayer = (
   
-  ledger: Ledger
+  playerRepository: PlayerRepository,
+  ledger: Ledger,
   
 ) => (
   
-  playerId: string
+  playerName: string
 
 ) =>
   
-  ledger.addTransaction({
-    comment: `creating player ${playerId}`,
-    changes: {
-      [playerId]: {
-        currencies: {
-          health: {
-            change: '=',
-            value: 100
-          },
-          coin: {
-            change: '=',
-            value: 20
-          },
-          experience: {
-            change: '=',
-            value: 0
-          },
+  playerRepository
+    .savePlayer({name: playerName})
+    .then(playerId => ledger.addTransaction({
+      comment: `creating player ${playerId}`,
+      changes: {
+        [playerId]: {
+          currencies: {
+            health: {
+              change: '=',
+              value: 100
+            },
+            coin: {
+              change: '=',
+              value: 20
+            },
+            experience: {
+              change: '=',
+              value: 0
+            },
+          }
         }
       }
-    }
-  })
+    }).then(() => playerId))

@@ -24,3 +24,13 @@ export interface LedgerEntry {
     }
   }
 }
+
+export interface Player {
+  name: string
+  id?: string
+}
+
+export interface PlayerRepository {
+  savePlayer(player: Player): Promise<string>
+  findPlayer(playerId: string): Promise<Player>
+}
