@@ -6,7 +6,7 @@ export const resurrectPlayer = (
   
 ) => (
   
-  playerId: string
+  playerId: string,
 
 ) => (
 

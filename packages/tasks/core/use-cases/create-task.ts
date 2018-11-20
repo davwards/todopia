@@ -2,15 +2,15 @@ import { TaskRepository, Status } from '../model'
 
 export const createTask = (
 
-  taskRepository: TaskRepository
+  taskRepository: TaskRepository,
 
 ) => (
 
   playerId: string,
   title: string,
-  deadline: string = undefined
+  deadline: string = undefined,
 
-) =>
+) => (
 
   taskRepository.saveTask({
     playerId,
@@ -19,3 +19,4 @@ export const createTask = (
     deadline
   })
 
+)

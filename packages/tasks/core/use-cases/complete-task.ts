@@ -7,13 +7,13 @@ const update = (base, overrides) => Object.assign({}, base, overrides)
 export const completeTask = (
 
   taskRepository: TaskRepository,
-  awardPrize: AwardPrize
+  awardPrize: AwardPrize,
 
 ) => (
 
-  taskId: string
+  taskId: string,
 
-) =>
+) => (
 
   taskRepository
     .findTask(taskId)
@@ -25,3 +25,4 @@ export const completeTask = (
           ))
     )
 
+)

@@ -10,13 +10,13 @@ const MISSED_DEADLINE_PENALTY = 10
 export const checkDeadlines = (
 
   taskRepository: TaskRepository,
-  penalizePlayer: PenalizePlayer
+  penalizePlayer: PenalizePlayer,
 
 ) => (
   
-  currentTime: string
+  currentTime: string,
 
-) =>
+) => (
 
   taskRepository
     .findExpiredTasks(currentTime)
@@ -26,6 +26,8 @@ export const checkDeadlines = (
           .then(markTaskOverdue(taskRepository, task))
       )
     ))
+
+)
 
 
 const update = (base, overrides) => Object.assign({}, base, overrides)
