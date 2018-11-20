@@ -9,7 +9,7 @@ export const createPlayer = (
   
   playerName: string
 
-) =>
+) => (
   
   playerRepository
     .savePlayer({name: playerName})
@@ -34,3 +34,5 @@ export const createPlayer = (
         }
       }
     }).then(() => playerId))
+
+)
