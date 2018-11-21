@@ -1,0 +1,22 @@
+{
+  "name": "@todopia/filesystem-persistence-plugin",
+  "version": "1.0.0",
+  "description": "Filesystem-backed persistence for the Todopia productivity-rpg game",
+  "main": "index.js",
+  "author": "David Edwards <david@davwards.com>",
+  "license": "Unlicensed",
+  "private": true,
+  "devDependencies": {
+    "@todopia/tasks-core": "1.0.0",
+    "@todopia/players-core": "1.0.0",
+    "@types/jest": "^23.3.9",
+    "@types/node": "^10.12.9",
+    "jest": "^23.6.0",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.6"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}

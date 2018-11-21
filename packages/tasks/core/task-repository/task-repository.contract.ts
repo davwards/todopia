@@ -8,7 +8,7 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
   })
 
   describe('behaving like a task repository', () => {
-    it('resolves with an id on save which can be used to fetch the todo', () => {
+    it('resolves with an id on save which can be used to fetch the todo', () =>
       repo
         .saveTask({
           title: 'Survey ley lines',
@@ -24,7 +24,7 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
             expect(task.deadline).toEqual('2018-11-05T11:59:59Z')
           })
         )
-    })
+    )
 
     it('updates tasks that have previously been saved', () =>
       repo
