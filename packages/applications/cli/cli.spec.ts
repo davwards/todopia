@@ -56,10 +56,44 @@ describe('Todopia CLI', () => {
   })
 
   describe('logging in', () => {
-    it('delegates to the session', () => {
-      cli(['login', 'Talapas'])
+    describe('when there is exactly one created player', () => {
+      beforeEach(() =>
+        playerRepository.savePlayer({id: 'player-a', name: 'Player A'})
+      )
+      
+      it('logs in as that player', () =>
+        cli(['login'])
+          .then(() =>
+            expect(session.login).toHaveBeenCalledWith('player-a')
+          )
+      )
+    })
 
-      expect(session.login).toHaveBeenCalledWith('Talapas')
+    describe('when there are several created players', () => {
+      beforeEach(() =>
+        playerRepository
+          .savePlayer({id: 'player-a', name: 'Player A'})
+          .then(() => playerRepository
+            .savePlayer({id: 'player-b', name: 'Player B'})
+          )
+      )
+
+      it('prompts for which player to log in as, then creates the session', () => {
+        ui.choice = (prompt: string, choices: string[]) => {
+          expect(prompt).toEqual('Which player?')
+          expect(choices).toContain('Player A')
+          expect(choices).toContain('Player B')
+
+          return Promise.resolve(
+            choices.indexOf('Player B')
+          )
+        }
+
+        return cli(['login'])
+          .then(() => {
+            expect(session.login).toHaveBeenCalledWith('player-b')
+          })
+      })
     })
   })
 

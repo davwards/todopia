@@ -111,6 +111,11 @@ export const FsBackedRepository = (
           throw `No player found with id: ${playerId}`
         }),
 
+    findAllPlayers: () =>
+      read('players').then(players =>
+        Object.keys(players).map(id => players[id])
+      ),
+
     currentStateFor: (playerId: string) =>
       read('ledger')
         .then(entries =>

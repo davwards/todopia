@@ -41,104 +41,25 @@ export function playerRepositoryContract(getRepo: () => PlayerRepository) {
           .catch(error => { expect(error).toEqual('No player found with id: nonsense-player-id') })
       )
     })
-  })
-/*
 
-    describe('when todos have been created for a few players', () => {
-      beforeEach(() =>
-        repo
-          .saveTask({
-            title: 'Survey ley lines',
-            playerId: 'player-a',
-            status: Status.INCOMPLETE
-          })
-          .then(() => repo.saveTask({
-            title: 'Collect reagents',
-            playerId: 'player-a',
-            status: Status.INCOMPLETE
-          }))
-          .then(() => repo.saveTask({
-            title: 'Tame gryphon',
-            playerId: 'player-b',
-            status: Status.INCOMPLETE
-          }))
-          .then(() => repo.saveTask({
-            title: 'Delve dungeon',
-            playerId: 'player-b',
-            status: Status.INCOMPLETE
-          }))
-      )
+    it('fetches all players', () => {
+      let firstId: string
+      let secondId: string
 
-      it('returns todos according to the given player id', () =>
-        repo
-          .findTasksForPlayer('player-a')
-          .then(tasks => {
-            const titles = tasks.map(t => t.title)
+      return repo.savePlayer({name: 'first'})
+        .then(id => firstId = id)
+        .then(() => repo.savePlayer({name: 'second'}))
+        .then(id => secondId = id)
+        .then(() => repo.findAllPlayers())
+        .then(players => {
+          expect(
+            players.find(player => player.id === firstId)
+          ).toEqual({id: firstId, name: 'first'})
 
-            expect(titles).toContain('Survey ley lines')
-            expect(titles).toContain('Collect reagents')
-            expect(titles).not.toContain('Tame gryphon')
-            expect(titles).not.toContain('Delve dungeon')
-          })
-      )
-    })
-
-    describe('fetching expired tasks', () => {
-      const now = '2018-11-05T12:00:00Z'
-      beforeEach(() =>
-        repo
-          .saveTask({
-            title: 'Task with no deadline',
-            playerId: 'player-a',
-            status: Status.INCOMPLETE,
-          })
-          .then(() => repo.saveTask({
-            title: 'Incomplete task with deadline in the past',
-            playerId: 'player-a',
-            status: Status.INCOMPLETE,
-            deadline: '2018-11-05T11:59:59Z',
-          }))
-          .then(() => repo.saveTask({
-            title: 'Completed task with deadline in the past',
-            playerId: 'player-a',
-            status: Status.COMPLETE,
-            deadline: '2018-11-05T11:59:59Z',
-          }))
-          .then(() => repo.saveTask({
-            title: 'Overdue task with deadline in the past',
-            playerId: 'player-a',
-            status: Status.OVERDUE,
-            deadline: '2018-11-05T11:59:59Z',
-          }))
-          .then(() => repo.saveTask({
-            title: 'Incomplete task with deadline right now',
-            playerId: 'player-a',
-            status: Status.INCOMPLETE,
-            deadline: '2018-11-05T12:00:00Z',
-          }))
-          .then(() => repo.saveTask({
-            title: 'Incomplete task with deadline in the future',
-            playerId: 'player-a',
-            status: Status.INCOMPLETE,
-            deadline: '2018-11-05T12:00:01Z',
-          }))
-      )
-
-      it('resolves with incomplete tasks with deadlines in the past', () =>
-        repo
-          .findExpiredTasks(now)
-          .then(tasks => {
-            const titles = tasks.map(t => t.title)
-
-            expect(titles).toContain('Incomplete task with deadline in the past')
-            expect(titles).not.toContain('Incomplete task with deadline in the future')
-            expect(titles).not.toContain('Incomplete task with deadline right now')
-            expect(titles).not.toContain('Overdue task with deadline in the past')
-            expect(titles).not.toContain('Completed task with deadline in the past')
-            expect(titles).not.toContain('Task with no deadline')
-          })
-      )
+          expect(
+            players.find(player => player.id === secondId)
+          ).toEqual({id: secondId, name: 'second'})
+        })
     })
   })
-*/
 }

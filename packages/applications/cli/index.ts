@@ -31,8 +31,15 @@ export const Cli = (inj: {
 ) => {
 
   if(argv[0] === 'login') {
-    inj.session.login(argv[1])
-    return Promise.resolve()
+    return inj.playerRepository.findAllPlayers()
+      .then(players => players.length === 1
+        ? inj.session.login(players[0].id)
+        : inj.ui.choice('Which player?', players.map(player =>
+            player.name
+          )).then(choiceIndex =>
+            inj.session.login(players[choiceIndex].id)
+          )
+      )
   }
 
   if(argv[0] === 'player') {
@@ -64,6 +71,5 @@ export const Cli = (inj: {
         .then(taskId => inj.completeTask(taskId))
     }
   }
-
 
 }

@@ -33,4 +33,5 @@ export interface Player {
 export interface PlayerRepository {
   savePlayer(player: Player): Promise<string>
   findPlayer(playerId: string): Promise<Player>
+  findAllPlayers(): Promise<Player[]>
 }
