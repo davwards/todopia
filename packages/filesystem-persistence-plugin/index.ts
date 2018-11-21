@@ -1,10 +1,16 @@
 import {
   Task,
   TaskRepository,
-  Status
+  Status,
 } from '@todopia/tasks-core'
 
-import { Player } from '@todopia/players-core'
+import {
+  Player,
+  CurrentPlayerState,
+  LedgerEntry,
+  currentStateReducer,
+  initialPlayerState,
+} from '@todopia/players-core'
 
 import { promisify } from 'util'
 import { join } from 'path'
@@ -19,20 +25,22 @@ export const FsBackedRepository = (
   folder: string,
 
 ) => {
+
+  const emptyStates = {
+    tasks: {},
+    players: {},
+    ledger: []
+  }
   
-  const storagePath = (file: string) =>
-    join(folder, `${file}.json`)
+  const storagePath = (file: string) => join(folder, `${file}.json`)
 
   const read = (file: string) =>
     existsSync(storagePath(file))
       ? promisify(readFile)(storagePath(file))
           .then(data => JSON.parse(data.toString()))
-      : Promise.resolve({})
+      : Promise.resolve(emptyStates[file])
 
-  const write = (
-    file: string,
-    data: {[id: string]: Task}
-  ) =>
+  const write = (file: string, data: {[id: string]: Task}) =>
     promisify(writeFile)(
       storagePath(file),
       JSON.stringify(data)
@@ -94,7 +102,21 @@ export const FsBackedRepository = (
           if(player) return player
           throw `No player found with id: ${playerId}`
         }),
+
+    currentStateFor: (playerId: string) =>
+      read('ledger')
+        .then(entries =>
+          entries.reduce(
+            currentStateReducer, {}
+          )[playerId] || initialPlayerState()
+        ),
+
+    addTransaction: (entry: LedgerEntry) =>
+      read('ledger')
+        .then(entries => {
+          entries.push(entry)
+          return write('ledger', entries)
+        }),
   }
 
 }
-

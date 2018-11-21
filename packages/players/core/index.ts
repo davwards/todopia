@@ -7,6 +7,9 @@ export {
   Player
 } from './model'
 
+export { currentStateReducer } from './ledger/current-state-reducer'
+export { initialPlayerState } from './ledger/initial-player-state'
+
 export { ledgerContract } from './ledger/ledger.contract'
 export { playerRepositoryContract } from './player-repository/player-repository.contract'
 

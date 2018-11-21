@@ -1,5 +1,6 @@
 import { taskRepositoryContract } from '@todopia/tasks-core'
 import { playerRepositoryContract } from '@todopia/players-core'
+import { ledgerContract } from '@todopia/players-core'
 
 import { promisify } from 'util'
 import { mkdtempSync } from 'fs'
@@ -18,6 +19,7 @@ describe('FsBackedRepository', () => {
 
   taskRepositoryContract(() => FsBackedRepository(folder))
   playerRepositoryContract(() => FsBackedRepository(folder))
+  ledgerContract(() => FsBackedRepository(folder))
 
   afterEach(() =>
     promisify(rmdir)(folder)
