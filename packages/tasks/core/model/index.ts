@@ -11,6 +11,7 @@ export interface TaskRepository {
   saveTask(task: Task): Promise<string>
   findTask(taskId: string): Promise<Task>
   findExpiredTasks(now: string): Promise<Task[]>
+  findAllCompletableTasksForPlayer(playerId: string): Promise<Task[]>
 }
 
 export interface AwardPrize {

@@ -152,5 +152,42 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
           })
       )
     })
+
+    describe('fetching completable tasks for player', () => {
+      beforeEach(() =>
+        repo
+          .saveTask({
+            title: 'Incomplete task',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+          })
+          .then(() => repo.saveTask({
+            title: 'Incomplete task for a different player',
+            playerId: 'player-b',
+            status: Status.INCOMPLETE,
+          }))
+          .then(() => repo.saveTask({
+            title: 'Completed task',
+            playerId: 'player-a',
+            status: Status.COMPLETE,
+          }))
+          .then(() => repo.saveTask({
+            title: 'Overdue task',
+            playerId: 'player-a',
+            status: Status.OVERDUE,
+          }))
+      )
+
+      it('returns all tasks for a player except completed ones', () =>
+        repo.findAllCompletableTasksForPlayer('player-a')
+          .then(tasks => tasks.map(task => task.title))
+          .then(tasks => {
+            expect(tasks).toContain('Incomplete task')
+            expect(tasks).toContain('Overdue task')
+            expect(tasks).not.toContain('Incomplete task for a different player')
+            expect(tasks).not.toContain('Completed task')
+          })
+      )
+    })
   })
 }

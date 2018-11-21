@@ -6,7 +6,8 @@
   "workspaces": [
     "packages/tasks/*",
     "packages/players/*",
-    "packages/plugins/*"
+    "packages/plugins/*",
+    "packages/applications/*"
   ],
   "private": true
 }

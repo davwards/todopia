@@ -31,6 +31,15 @@ export function FakeTaskRepository(): TaskRepository {
           .filter(task => new Date(task.deadline) < new Date(now))
           .filter(task => task.status === Status.INCOMPLETE)
       )
+    },
+
+    findAllCompletableTasksForPlayer(playerId: string) {
+      return Promise.resolve(
+        Object.keys(tasks)
+          .map(id => tasks[id])
+          .filter(task => task.playerId === playerId)
+          .filter(task => task.status !== Status.COMPLETE)
+      )
     }
   }
 }

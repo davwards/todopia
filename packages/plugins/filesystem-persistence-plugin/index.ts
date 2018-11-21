@@ -83,6 +83,14 @@ export const FsBackedRepository = (
           .filter(task => task.status === Status.INCOMPLETE)
         ),
 
+    findAllCompletableTasksForPlayer: (playerId: string) =>
+      read('tasks')
+        .then(tasks => Object.keys(tasks)
+          .map(id => tasks[id])
+          .filter(task => task.playerId === playerId)
+          .filter(task => task.status !== Status.COMPLETE)
+        ),
+
     savePlayer: (player: Player) => {
       const id = player.id
         || Math.round(Math.random() * 10000000).toString()
