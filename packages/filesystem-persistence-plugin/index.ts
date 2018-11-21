@@ -85,7 +85,7 @@ export const FsBackedRepository = (
 
     savePlayer: (player: Player) => {
       const id = player.id
-        || Math.round(Math.random() * 100000).toString()
+        || Math.round(Math.random() * 10000000).toString()
 
       return read('tasks')
         .then(players => {
