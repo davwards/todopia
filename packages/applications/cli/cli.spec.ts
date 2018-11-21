@@ -1,9 +1,15 @@
 import { Cli } from '.'
+
 import {
   FakeTaskRepository,
   TaskRepository,
   Status
 } from '@todopia/tasks-core'
+
+import {
+  PlayerRepository,
+  FakePlayerRepository,
+} from '@todopia/players-core'
 
 describe('Todopia CLI', () => {
   let createPlayer
@@ -11,6 +17,7 @@ describe('Todopia CLI', () => {
   let completeTask
   let session
   let taskRepository: TaskRepository
+  let playerRepository: PlayerRepository
   let ui
   let cli
 
@@ -18,30 +25,32 @@ describe('Todopia CLI', () => {
     createPlayer = jest.fn()
     createTask = jest.fn()
     completeTask = jest.fn()
+    taskRepository = FakeTaskRepository()
+    playerRepository = FakePlayerRepository()
+
     session = {
       login: jest.fn(),
       currentPlayer: () => Promise.resolve('player-a')
     }
-    taskRepository = FakeTaskRepository()
+
     ui = {
       choice: jest.fn(),
     }
 
     cli = Cli({
+      session,
       createPlayer,
       createTask,
       completeTask,
-      session,
       taskRepository,
-      ui
+      playerRepository,
+      ui,
     })
   })
 
   describe('creating a player', () => {
     it('invokes the use case with the given name', () => {
-
       cli(['player', 'create', 'Talapas'])
-
       expect(createPlayer).toHaveBeenCalledWith('Talapas')
     })
   })

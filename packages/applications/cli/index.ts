@@ -1,7 +1,10 @@
 import { TaskRepository, Status } from '@todopia/tasks-core'
+import { PlayerRepository } from '@todopia/players-core'
 import { Session } from './model'
 
 export const Cli = (inj: {
+
+  session: Session,
 
   createPlayer: (name: string) => Promise<string>,
 
@@ -13,9 +16,9 @@ export const Cli = (inj: {
 
   completeTask: (taskId: string) => Promise<void>,
 
-  session: Session,
-
   taskRepository: TaskRepository,
+
+  playerRepository: PlayerRepository,
 
   ui: {
     choice: (prompt: string, choices: string[]) => Promise<string>
