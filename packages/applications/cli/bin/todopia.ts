@@ -21,6 +21,10 @@ import {
   damagePlayer,
 } from '@todopia/tasks-player-currency-plugin'
 
+import {
+  updateWorld
+} from '../update-world'
+
 import { Cli } from '..'
 
 const todopiaHome = join(process.env.HOME, '.todopia')
@@ -50,6 +54,14 @@ Cli({
     damagePlayer(persistence),
   ),
   resurrectPlayer: resurrectPlayer(persistence),
+  updateWorld: updateWorld({
+    checkDeadlines: checkDeadlines(
+      persistence,
+      damagePlayer(persistence),
+    ),
+    resurrectPlayer: resurrectPlayer(persistence),
+    playerRepository: persistence 
+  }),
   taskRepository: persistence,
   playerRepository: persistence,
   ledger: persistence,

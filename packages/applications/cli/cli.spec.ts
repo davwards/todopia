@@ -19,6 +19,7 @@ describe('Todopia CLI', () => {
   let checkDeadlines
   let resurrectPlayer
   let session
+  let updateWorld
   let taskRepository: TaskRepository
   let playerRepository: PlayerRepository
   let ledger: Ledger
@@ -27,11 +28,12 @@ describe('Todopia CLI', () => {
   let cli
 
   beforeEach(() => {
-    createPlayer = jest.fn()
-    createTask = jest.fn()
-    completeTask = jest.fn()
-    checkDeadlines = jest.fn()
-    resurrectPlayer = jest.fn()
+    createPlayer = jest.fn(() => Promise.resolve())
+    createTask = jest.fn(() => Promise.resolve())
+    completeTask = jest.fn(() => Promise.resolve())
+    checkDeadlines = jest.fn(() => Promise.resolve())
+    resurrectPlayer = jest.fn(() => Promise.resolve())
+    updateWorld = jest.fn(() => Promise.resolve())
 
     taskRepository = FakeTaskRepository()
     playerRepository = FakePlayerRepository()
@@ -58,6 +60,7 @@ describe('Todopia CLI', () => {
       createTask,
       completeTask,
       checkDeadlines,
+      updateWorld,
       resurrectPlayer,
       taskRepository,
       playerRepository,
@@ -68,10 +71,12 @@ describe('Todopia CLI', () => {
   })
 
   describe('creating a player', () => {
-    it('invokes the use case with the given name', () => {
+    it('invokes the use case with the given name', () =>
       cli(['player', 'create', 'Talapas'])
-      expect(createPlayer).toHaveBeenCalledWith('Talapas')
-    })
+        .then(() => {
+          expect(createPlayer).toHaveBeenCalledWith('Talapas')
+        })
+    )
   })
 
   describe('getting player info', () => {
@@ -97,6 +102,13 @@ describe('Todopia CLI', () => {
           expect(ui.print).toHaveBeenCalledWith('  experience: 80')
         })
     )
+
+    it('updates the world', () =>
+      cli(['player', 'info'])
+        .then(() =>
+          expect(updateWorld).toHaveBeenCalledWith(now)
+        )
+    )
   })
 
   describe('logging in', () => {
@@ -112,18 +124,11 @@ describe('Todopia CLI', () => {
           )
       )
 
-      it('checks deadlines', () =>
+      it('updates the world', () =>
         cli(['login'])
           .then(() =>
-            expect(checkDeadlines).toHaveBeenCalledWith(now)
+            expect(updateWorld).toHaveBeenCalledWith(now)
           )
-      )
-
-      it('checks the player for resurrection', () =>
-        cli(['login'])
-          .then(() => {
-            expect(resurrectPlayer).toHaveBeenCalledWith('player-a')
-          })
       )
     })
 
@@ -156,19 +161,11 @@ describe('Todopia CLI', () => {
           })
       })
 
-      it('checks deadlines', () =>
+      it('updates the world', () =>
         cli(['login'])
           .then(() =>
-            expect(checkDeadlines).toHaveBeenCalledWith(now)
+            expect(updateWorld).toHaveBeenCalledWith(now)
           )
-      )
-
-      it('checks each player for resurrection', () =>
-        cli(['login'])
-          .then(() => {
-            expect(resurrectPlayer).toHaveBeenCalledWith('player-a')
-            expect(resurrectPlayer).toHaveBeenCalledWith('player-b')
-          })
       )
     })
   })
@@ -183,6 +180,13 @@ describe('Todopia CLI', () => {
             )
           })
       )
+
+      it('updates the world', () =>
+        cli(['task', 'create', 'Survey ley lines'])
+          .then(() =>
+            expect(updateWorld).toHaveBeenCalledWith(now)
+          )
+      )
     })
 
     describe('without a deadline', () => {
@@ -193,6 +197,13 @@ describe('Todopia CLI', () => {
               'player-a', 'Survey ley lines', '2018-11-05'
             )
           })
+      )
+
+      it('updates the world', () =>
+        cli(['task', 'create', 'Survey ley lines', '--deadline', '2018-11-05'])
+          .then(() =>
+            expect(updateWorld).toHaveBeenCalledWith(now)
+          )
       )
     })
   })
@@ -244,6 +255,13 @@ describe('Todopia CLI', () => {
           expect(ui.print).not.toHaveBeenCalledWith('Incomplete task for a different player')
         })
     )
+
+    it('updates the world', () =>
+      cli(['task', 'list'])
+        .then(() =>
+          expect(updateWorld).toHaveBeenCalledWith(now)
+        )
+    )
   })
 
   describe('completing a task', () => {
@@ -283,6 +301,11 @@ describe('Todopia CLI', () => {
         }))
     )
 
+    beforeEach(() => {
+      ui.choice = (prompt: string, choices: string[]) =>
+        Promise.resolve(choices.indexOf('First Incomplete Task'))
+    })
+
     it('prompts for which not-completed task to complete, then invokes the use case with the id of that task', () => {
       ui.choice = (prompt: string, choices: string[]) => {
         expect(prompt).toEqual('Which task?')
@@ -302,6 +325,13 @@ describe('Todopia CLI', () => {
           expect(completeTask).toHaveBeenCalledWith('task-2')
         })
     })
+
+    it('updates the world', () =>
+      cli(['task', 'complete'])
+        .then(() =>
+          expect(updateWorld).toHaveBeenCalledWith(now)
+        )
+    )
   })
 })
 
