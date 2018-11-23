@@ -9,6 +9,7 @@
   "devDependencies": {
     "@todopia/tasks-core": "1.0.0",
     "@todopia/players-core": "1.0.0",
+    "@todopia/tasks-player-currency-plugin": "1.0.0",
     "@todopia/filesystem-persistence-plugin": "1.0.0",
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.9",
