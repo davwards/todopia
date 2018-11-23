@@ -18,6 +18,8 @@ export const Cli = (inj: {
 
   checkDeadlines: (currentTime: string) => Promise<any>,
 
+  resurrectPlayer: (playerId: string) => Promise<any>,
+
   taskRepository: TaskRepository,
 
   playerRepository: PlayerRepository,
@@ -41,12 +43,21 @@ export const Cli = (inj: {
     return inj.playerRepository.findAllPlayers()
       .then(players => players.length === 1
         ? inj.session.login(players[0].id)
-        : inj.ui.choice('Which player?', players.map(player =>
-            player.name
-          )).then(choiceIndex =>
+        : inj.ui.choice(
+            'Which player?',
+            players.map(player => player.name)
+          )
+          .then(choiceIndex =>
             inj.session.login(players[choiceIndex].id)
           )
-      ).then(() => inj.checkDeadlines(inj.now()))
+      )
+      .then(() => inj.checkDeadlines(inj.now()))
+      .then(() => inj.playerRepository.findAllPlayers())
+      .then(players => Promise.all(
+        players.map(player =>
+          inj.resurrectPlayer(player.id)
+        )
+      ))
   }
 
   if(argv[0] === 'player') {

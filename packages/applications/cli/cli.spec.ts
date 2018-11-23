@@ -17,6 +17,7 @@ describe('Todopia CLI', () => {
   let createTask
   let completeTask
   let checkDeadlines
+  let resurrectPlayer
   let session
   let taskRepository: TaskRepository
   let playerRepository: PlayerRepository
@@ -30,6 +31,7 @@ describe('Todopia CLI', () => {
     createTask = jest.fn()
     completeTask = jest.fn()
     checkDeadlines = jest.fn()
+    resurrectPlayer = jest.fn()
 
     taskRepository = FakeTaskRepository()
     playerRepository = FakePlayerRepository()
@@ -44,8 +46,8 @@ describe('Todopia CLI', () => {
     }
 
     ui = {
-      choice: jest.fn(),
-      print: jest.fn()
+      choice: jest.fn(() => Promise.resolve()),
+      print: jest.fn(() => Promise.resolve())
     }
 
     now = '2018-11-05T12:59:59.001Z'
@@ -56,6 +58,7 @@ describe('Todopia CLI', () => {
       createTask,
       completeTask,
       checkDeadlines,
+      resurrectPlayer,
       taskRepository,
       playerRepository,
       ledger,
@@ -115,16 +118,26 @@ describe('Todopia CLI', () => {
             expect(checkDeadlines).toHaveBeenCalledWith(now)
           )
       )
+
+      it('checks the player for resurrection', () =>
+        cli(['login'])
+          .then(() => {
+            expect(resurrectPlayer).toHaveBeenCalledWith('player-a')
+          })
+      )
     })
 
     describe('when there are several created players', () => {
-      beforeEach(() =>
-        playerRepository
+      beforeEach(() => {
+        ui.choice = (prompt: string, choices: string[]) =>
+          Promise.resolve(choices.indexOf('Player B'))
+
+        return playerRepository
           .savePlayer({id: 'player-a', name: 'Player A'})
           .then(() => playerRepository
             .savePlayer({id: 'player-b', name: 'Player B'})
           )
-      )
+      })
 
       it('prompts for which player to log in as, then creates the session', () => {
         ui.choice = (prompt: string, choices: string[]) => {
@@ -142,6 +155,21 @@ describe('Todopia CLI', () => {
             expect(session.login).toHaveBeenCalledWith('player-b')
           })
       })
+
+      it('checks deadlines', () =>
+        cli(['login'])
+          .then(() =>
+            expect(checkDeadlines).toHaveBeenCalledWith(now)
+          )
+      )
+
+      it('checks each player for resurrection', () =>
+        cli(['login'])
+          .then(() => {
+            expect(resurrectPlayer).toHaveBeenCalledWith('player-a')
+            expect(resurrectPlayer).toHaveBeenCalledWith('player-b')
+          })
+      )
     })
   })
 

@@ -12,7 +12,8 @@ import {
 } from '@todopia/tasks-core'
 
 import {
-  createPlayer
+  createPlayer,
+  resurrectPlayer,
 } from '@todopia/players-core'
 
 import {
@@ -48,6 +49,7 @@ Cli({
     persistence,
     damagePlayer(persistence),
   ),
+  resurrectPlayer: resurrectPlayer(persistence),
   taskRepository: persistence,
   playerRepository: persistence,
   ledger: persistence,
@@ -59,11 +61,9 @@ Cli({
         console.log(`  ${i}: ${choice}`)
       })
 
-      return new Promise((resolve) => {
-        rl.question('Enter the number of your choice: ', answer => {
-          resolve(answer)
-        })
-      })
+      return new Promise((resolve) =>
+        rl.question('Enter the number of your choice: ', resolve)
+      )
     },
 
     print: (text: string) => {
