@@ -154,6 +154,55 @@ describe('Todopia CLI', () => {
     })
   })
 
+  describe('listing tasks', () => {
+    beforeEach(() =>
+      taskRepository
+        .saveTask({
+          id: 'task-1',
+          playerId: 'player-a',
+          title: 'Completed Task',
+          status: Status.COMPLETE
+        })
+        .then(() => taskRepository.saveTask({
+          id: 'task-2',
+          playerId: 'player-a',
+          title: 'First Incomplete Task',
+          status: Status.INCOMPLETE
+        }))
+        .then(() => taskRepository.saveTask({
+          id: 'task-3',
+          playerId: 'player-a',
+          title: 'Second Incomplete Task',
+          deadline: '2018-11-05',
+          status: Status.INCOMPLETE
+        }))
+        .then(() => taskRepository.saveTask({
+          id: 'task-4',
+          playerId: 'player-a',
+          title: 'Overdue Task',
+          deadline: '2018-11-01',
+          status: Status.OVERDUE
+        }))
+        .then(() => taskRepository.saveTask({
+          id: 'task-5',
+          playerId: 'player-b',
+          title: 'Incomplete task for different player',
+          status: Status.INCOMPLETE
+        }))
+    )
+
+    it('prints not-completed tasks for the logged in player', () =>
+      cli(['task', 'list'])
+        .then(() => {
+          expect(ui.print).toHaveBeenCalledWith('First Incomplete Task')
+          expect(ui.print).toHaveBeenCalledWith('Second Incomplete Task (due 2018-11-05)')
+          expect(ui.print).toHaveBeenCalledWith('Overdue Task (due 2018-11-01)!!')
+          expect(ui.print).not.toHaveBeenCalledWith('Completed Task')
+          expect(ui.print).not.toHaveBeenCalledWith('Incomplete task for a different player')
+        })
+    )
+  })
+
   describe('completing a task', () => {
     beforeEach(() =>
       taskRepository

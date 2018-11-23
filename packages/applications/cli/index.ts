@@ -1,4 +1,4 @@
-import { TaskRepository, Status } from '@todopia/tasks-core'
+import { TaskRepository, Status, Task } from '@todopia/tasks-core'
 import { PlayerRepository, Ledger } from '@todopia/players-core'
 import { Session } from './model'
 
@@ -79,21 +79,40 @@ export const Cli = (inj: {
         )
     }
 
+    if(argv[1] === 'list') {
+      return inj.session.currentPlayer()
+        .then(playerId =>
+          inj.taskRepository
+            .findAllCompletableTasksForPlayer(playerId)
+        )
+        .then(tasks => {
+          inj.ui.print('')
+          tasks.forEach(task => inj.ui.print(displayTask(task)))
+          inj.ui.print('')
+        })
+    }
+
     if(argv[1] === 'complete') {
       return inj.session.currentPlayer()
         .then(playerId => inj.taskRepository
-          .findAllCompletableTasksForPlayer(playerId))
+          .findAllCompletableTasksForPlayer(playerId)
+        )
         .then(tasks =>
-          inj.ui.choice('Which task?', tasks.map(task =>
-            [
-              task.title,
-              task.deadline ? ` (due ${task.deadline})` : '',
-              task.status === Status.OVERDUE ? '!!' : '',
-            ].join('')
-          )).then(choiceIndex => tasks[choiceIndex].id))
+          inj.ui.choice(
+            'Which task?',
+            tasks.map(displayTask)
+          ).then(choiceIndex => tasks[choiceIndex].id)
+        )
         .then(taskId => inj.completeTask(taskId))
     }
   }
 
   return Promise.resolve()
 }
+
+const displayTask = (task: Task) =>
+  [
+    task.title,
+    task.deadline ? ` (due ${task.deadline})` : '',
+    task.status === Status.OVERDUE ? '!!' : '',
+  ].join('')
