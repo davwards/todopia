@@ -26,10 +26,15 @@ export const FsBackedRepository = (
 
 ) => {
 
-  const emptyStates = {
-    tasks: {},
-    players: {},
-    ledger: []
+  const emptyStateFor = (file: string) => {
+    switch(file) {
+      case 'tasks':
+        return {}
+      case 'players':
+        return {}
+      case 'ledger':
+        return []
+    }
   }
   
   const storagePath = (file: string) => join(folder, `${file}.json`)
@@ -38,7 +43,7 @@ export const FsBackedRepository = (
     existsSync(storagePath(file))
       ? promisify(readFile)(storagePath(file))
           .then(data => JSON.parse(data.toString()))
-      : Promise.resolve(emptyStates[file])
+      : Promise.resolve(emptyStateFor(file))
 
   const write = (file: string, data: {[id: string]: Task}) =>
     promisify(writeFile)(
@@ -95,7 +100,7 @@ export const FsBackedRepository = (
       const id = player.id
         || Math.round(Math.random() * 10000000).toString()
 
-      return read('tasks')
+      return read('players')
         .then(players => {
           players[id] = Object.assign({}, player, {id})
           return write('players', players)

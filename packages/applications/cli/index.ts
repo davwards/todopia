@@ -14,7 +14,7 @@ export const Cli = (inj: {
     deadline?: string
   ) => Promise<string>,
 
-  completeTask: (taskId: string) => Promise<void>,
+  completeTask: (taskId: string) => Promise<string>,
 
   taskRepository: TaskRepository,
 
@@ -28,7 +28,7 @@ export const Cli = (inj: {
 
   argv: string[],
 
-) => {
+): Promise<any> => {
 
   if(argv[0] === 'login') {
     return inj.playerRepository.findAllPlayers()
@@ -72,4 +72,5 @@ export const Cli = (inj: {
     }
   }
 
+  return Promise.resolve()
 }
