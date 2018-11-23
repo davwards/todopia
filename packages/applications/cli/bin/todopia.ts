@@ -7,7 +7,8 @@ import { FsBackedSession } from '../session/fs-backed-session'
 
 import {
   createTask,
-  completeTask
+  completeTask,
+  checkDeadlines,
 } from '@todopia/tasks-core'
 
 import {
@@ -15,7 +16,8 @@ import {
 } from '@todopia/players-core'
 
 import {
-  awardPlayerWithCurrency
+  awardPlayerWithCurrency,
+  damagePlayer,
 } from '@todopia/tasks-player-currency-plugin'
 
 import { Cli } from '..'
@@ -40,7 +42,11 @@ Cli({
   createTask: createTask(persistence),
   completeTask: completeTask(
     persistence,
-    awardPlayerWithCurrency(persistence)
+    awardPlayerWithCurrency(persistence),
+  ),
+  checkDeadlines: checkDeadlines(
+    persistence,
+    damagePlayer(persistence),
   ),
   taskRepository: persistence,
   playerRepository: persistence,
@@ -64,4 +70,5 @@ Cli({
       console.log(text)
     }
   },
+  now: () => new Date().toISOString(),
 })(args).then(() => { rl.close() })

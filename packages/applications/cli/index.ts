@@ -16,6 +16,8 @@ export const Cli = (inj: {
 
   completeTask: (taskId: string) => Promise<string>,
 
+  checkDeadlines: (currentTime: string) => Promise<any>,
+
   taskRepository: TaskRepository,
 
   playerRepository: PlayerRepository,
@@ -25,7 +27,9 @@ export const Cli = (inj: {
   ui: {
     choice: (prompt: string, choices: string[]) => Promise<string>
     print: (text: string) => void
-  }
+  },
+
+  now: () => string
 
 }) => (
 
@@ -42,7 +46,7 @@ export const Cli = (inj: {
           )).then(choiceIndex =>
             inj.session.login(players[choiceIndex].id)
           )
-      )
+      ).then(() => inj.checkDeadlines(inj.now()))
   }
 
   if(argv[0] === 'player') {

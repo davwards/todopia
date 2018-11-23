@@ -16,10 +16,12 @@ describe('Todopia CLI', () => {
   let createPlayer
   let createTask
   let completeTask
+  let checkDeadlines
   let session
   let taskRepository: TaskRepository
   let playerRepository: PlayerRepository
   let ledger: Ledger
+  let now
   let ui
   let cli
 
@@ -27,6 +29,8 @@ describe('Todopia CLI', () => {
     createPlayer = jest.fn()
     createTask = jest.fn()
     completeTask = jest.fn()
+    checkDeadlines = jest.fn()
+
     taskRepository = FakeTaskRepository()
     playerRepository = FakePlayerRepository()
     ledger = {
@@ -44,15 +48,19 @@ describe('Todopia CLI', () => {
       print: jest.fn()
     }
 
+    now = '2018-11-05T12:59:59.001Z'
+
     cli = Cli({
       session,
       createPlayer,
       createTask,
       completeTask,
+      checkDeadlines,
       taskRepository,
       playerRepository,
       ledger,
       ui,
+      now: () => now
     })
   })
 
@@ -98,6 +106,13 @@ describe('Todopia CLI', () => {
         cli(['login'])
           .then(() =>
             expect(session.login).toHaveBeenCalledWith('player-a')
+          )
+      )
+
+      it('checks deadlines', () =>
+        cli(['login'])
+          .then(() =>
+            expect(checkDeadlines).toHaveBeenCalledWith(now)
           )
       )
     })
