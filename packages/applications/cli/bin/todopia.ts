@@ -44,6 +44,7 @@ Cli({
   ),
   taskRepository: persistence,
   playerRepository: persistence,
+  ledger: persistence,
   ui: {
     choice: (prompt: string, choices: string[]) => {
       console.log('')
@@ -57,6 +58,10 @@ Cli({
           resolve(answer)
         })
       })
+    },
+
+    print: (text: string) => {
+      console.log(text)
     }
   },
 })(args).then(() => { rl.close() })

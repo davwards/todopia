@@ -9,6 +9,7 @@ import {
 import {
   PlayerRepository,
   FakePlayerRepository,
+  Ledger
 } from '@todopia/players-core'
 
 describe('Todopia CLI', () => {
@@ -18,6 +19,7 @@ describe('Todopia CLI', () => {
   let session
   let taskRepository: TaskRepository
   let playerRepository: PlayerRepository
+  let ledger: Ledger
   let ui
   let cli
 
@@ -27,6 +29,10 @@ describe('Todopia CLI', () => {
     completeTask = jest.fn()
     taskRepository = FakeTaskRepository()
     playerRepository = FakePlayerRepository()
+    ledger = {
+      currentStateFor: jest.fn(),
+      addTransaction: jest.fn()
+    }
 
     session = {
       login: jest.fn(),
@@ -35,6 +41,7 @@ describe('Todopia CLI', () => {
 
     ui = {
       choice: jest.fn(),
+      print: jest.fn()
     }
 
     cli = Cli({
@@ -44,6 +51,7 @@ describe('Todopia CLI', () => {
       completeTask,
       taskRepository,
       playerRepository,
+      ledger,
       ui,
     })
   })
@@ -53,6 +61,31 @@ describe('Todopia CLI', () => {
       cli(['player', 'create', 'Talapas'])
       expect(createPlayer).toHaveBeenCalledWith('Talapas')
     })
+  })
+
+  describe('getting player info', () => {
+    beforeEach(() => {
+      ledger.currentStateFor = jest.fn(() => Promise.resolve({
+        currencies: {
+          health: 24,
+          coin: 9,
+          experience: 80
+        }
+      }))
+
+      return playerRepository
+        .savePlayer({id: 'player-a', name: 'Talapas'})
+    })
+
+    it('displays info about the logged in player', () =>
+      cli(['player', 'info'])
+        .then(() => {
+          expect(ui.print).toHaveBeenCalledWith('Player: Talapas')
+          expect(ui.print).toHaveBeenCalledWith('  health: 24')
+          expect(ui.print).toHaveBeenCalledWith('  coin: 9')
+          expect(ui.print).toHaveBeenCalledWith('  experience: 80')
+        })
+    )
   })
 
   describe('logging in', () => {

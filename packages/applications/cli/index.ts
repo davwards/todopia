@@ -1,5 +1,5 @@
 import { TaskRepository, Status } from '@todopia/tasks-core'
-import { PlayerRepository } from '@todopia/players-core'
+import { PlayerRepository, Ledger } from '@todopia/players-core'
 import { Session } from './model'
 
 export const Cli = (inj: {
@@ -20,8 +20,11 @@ export const Cli = (inj: {
 
   playerRepository: PlayerRepository,
 
+  ledger: Ledger,
+
   ui: {
     choice: (prompt: string, choices: string[]) => Promise<string>
+    print: (text: string) => void
   }
 
 }) => (
@@ -43,8 +46,28 @@ export const Cli = (inj: {
   }
 
   if(argv[0] === 'player') {
-    inj.createPlayer(argv[2])
-    return Promise.resolve()
+    if(argv[1] === 'create') {
+      inj.createPlayer(argv[2])
+      return Promise.resolve()
+    }
+
+    if(argv[1] === 'info') {
+      return inj.session.currentPlayer()
+        .then(id => inj.playerRepository.findPlayer(id))
+        .then(player => {
+          inj.ledger.currentStateFor(player.id)
+            .then(playerState => {
+              inj.ui.print('')
+              inj.ui.print(`Player: ${player.name}`)
+              Object.keys(playerState.currencies).sort().forEach(currency => {
+                inj.ui.print(
+                  `  ${currency}: ${playerState.currencies[currency]}`
+                )
+              })
+              inj.ui.print('')
+            })
+        })
+    }
   }
 
   if(argv[0] === 'task') {
