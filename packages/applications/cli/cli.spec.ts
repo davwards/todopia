@@ -16,8 +16,6 @@ describe('Todopia CLI', () => {
   let createPlayer
   let createTask
   let completeTask
-  let checkDeadlines
-  let resurrectPlayer
   let session
   let updateWorld
   let taskRepository: TaskRepository
@@ -31,8 +29,6 @@ describe('Todopia CLI', () => {
     createPlayer = jest.fn(() => Promise.resolve())
     createTask = jest.fn(() => Promise.resolve())
     completeTask = jest.fn(() => Promise.resolve())
-    checkDeadlines = jest.fn(() => Promise.resolve())
-    resurrectPlayer = jest.fn(() => Promise.resolve())
     updateWorld = jest.fn(() => Promise.resolve())
 
     taskRepository = FakeTaskRepository()
@@ -59,9 +55,7 @@ describe('Todopia CLI', () => {
       createPlayer,
       createTask,
       completeTask,
-      checkDeadlines,
       updateWorld,
-      resurrectPlayer,
       taskRepository,
       playerRepository,
       ledger,
