@@ -30,6 +30,10 @@ export const createPlayer = (
               change: '=',
               value: 0
             },
+            level: {
+              change: '=',
+              value: 1
+            },
           }
         }
       }

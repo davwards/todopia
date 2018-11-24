@@ -20,6 +20,7 @@ export const levelUp = (
               currencies: {
                 experience: { change: '$', value: 100, },
                 level: { change: '+', value: 1, },
+                health: { change: '=', value: 100, },
               }
             }
           }

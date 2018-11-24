@@ -28,6 +28,7 @@ describe('Creating a new player', () => {
         expect(state.currencies.health).toEqual(100)
         expect(state.currencies.coin).toEqual(20)
         expect(state.currencies.experience).toEqual(0)
+        expect(state.currencies.level).toEqual(1)
       })
   )
 })
