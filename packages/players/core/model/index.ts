@@ -10,7 +10,7 @@ export interface CurrentPlayerState {
 }
 
 export interface CurrencyChange {
-  change: '+' | '-' | '='
+  change: '+' | '-' | '=' | '$'
   value: number
 }
 

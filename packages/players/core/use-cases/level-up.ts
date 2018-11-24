@@ -18,7 +18,7 @@ export const levelUp = (
           changes: {
             [playerId]: {
               currencies: {
-                experience: { change: '-', value: 100, },
+                experience: { change: '$', value: 100, },
                 level: { change: '+', value: 1, },
               }
             }

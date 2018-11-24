@@ -155,6 +155,87 @@ export function ledgerContract(getLedger: () => Ledger) {
             expect(state.currencies.coin).toEqual(0)
             expect(state.currencies.experience).toEqual(0)
           })
+          .then(() => ledger.addTransaction({
+            comment: 'add some currencies so we can deduct from them later',
+            changes: {
+              'player-a': {
+                currencies: {
+                  health: {
+                    change: '+',
+                    value: 100
+                  },
+                  coin: {
+                    change: '+',
+                    value: 100
+                  },
+                  experience: {
+                    change: '+',
+                    value: 100
+                  },
+                }
+              }
+            }
+          }))
+          .then(() => ledger.currentStateFor('player-a'))
+          .then(state => {
+            expect(state.currencies.health).toEqual(100)
+            expect(state.currencies.coin).toEqual(100)
+            expect(state.currencies.experience).toEqual(100)
+          })
+          .then(() => ledger.addTransaction({
+            comment: 'pay a cost that the player can afford',
+            changes: {
+              'player-a': {
+                currencies: {
+                  health: {
+                    change: '$',
+                    value: 60
+                  },
+                  coin: {
+                    change: '+',
+                    value: 10
+                  },
+                  experience: {
+                    change: '+',
+                    value: 10
+                  },
+                }
+              }
+            }
+          }))
+          .then(() => ledger.currentStateFor('player-a'))
+          .then(state => {
+            expect(state.currencies.health).toEqual(40)
+            expect(state.currencies.coin).toEqual(110)
+            expect(state.currencies.experience).toEqual(110)
+          })
+          .then(() => ledger.addTransaction({
+            comment: 'pay a cost that the player cannot afford',
+            changes: {
+              'player-a': {
+                currencies: {
+                  health: {
+                    change: '$',
+                    value: 60
+                  },
+                  coin: {
+                    change: '+',
+                    value: 10
+                  },
+                  experience: {
+                    change: '+',
+                    value: 10
+                  },
+                }
+              }
+            }
+          }))
+          .then(() => ledger.currentStateFor('player-a'))
+          .then(state => {
+            expect(state.currencies.health).toEqual(40)
+            expect(state.currencies.coin).toEqual(110)
+            expect(state.currencies.experience).toEqual(110)
+          })
       )
     })
   })
