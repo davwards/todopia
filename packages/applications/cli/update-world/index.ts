@@ -4,6 +4,7 @@ export const updateWorld = (inj: {
 
   checkDeadlines: (currentTime: string) => Promise<any>,
   resurrectPlayer: (playerId: string) => Promise<any>,
+  levelUp: (playerId: string) => Promise<any>,
   playerRepository: PlayerRepository,
 
 }) => (
@@ -16,7 +17,8 @@ export const updateWorld = (inj: {
     .then(() => inj.playerRepository.findAllPlayers())
     .then(players => Promise.all(
       players.map(player =>
-        inj.resurrectPlayer(player.id)
+        inj.levelUp(player.id)
+          .then(() => inj.resurrectPlayer(player.id))
       )
     ))
 

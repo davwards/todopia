@@ -17,6 +17,7 @@ import {
 import {
   createPlayer,
   resurrectPlayer,
+  levelUp,
 } from '@todopia/players-core'
 
 import {
@@ -71,6 +72,7 @@ Cli({
       damagePlayer(persistence),
     ),
     resurrectPlayer: resurrectPlayer(persistence),
+    levelUp: levelUp(persistence),
     playerRepository: persistence 
   }),
 
