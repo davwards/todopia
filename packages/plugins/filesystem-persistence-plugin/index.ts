@@ -135,6 +135,19 @@ export const FsBackedRepository = (
           entries.push(entry)
           return write('ledger', entries)
         }),
+
+    findInstancesOfRecurringTaskOnOrAfter: (
+      recurringTaskId: string,
+      time: string,
+    ) => read('tasks')
+        .then(tasks => Object.keys(tasks)
+          .map(id => tasks[id])
+          .filter(task => task.parentRecurringTaskId === recurringTaskId)
+          .filter(task =>
+            new Date(task.createdAt).getTime() >= new Date(time).getTime()
+          )
+        ),
+
   }
 
 }

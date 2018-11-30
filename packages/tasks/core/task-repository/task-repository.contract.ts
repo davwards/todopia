@@ -2,9 +2,11 @@ import { TaskRepository, Status } from '../model'
 
 export function taskRepositoryContract(getRepo: () => TaskRepository) {
   let repo: TaskRepository
+  let now: string
 
   beforeEach(() => {
     repo = getRepo()
+    now = '2018-11-05T12:00:00'
   })
 
   describe('behaving like a task repository', () => {
@@ -15,6 +17,8 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
           playerId: 'player-a',
           status: Status.INCOMPLETE,
           deadline: '2018-11-05T11:59:59Z',
+          parentRecurringTaskId: 'some-recurring-task',
+          createdAt: now,
         })
         .then(id => repo.findTask(id)
           .then(task => {
@@ -22,19 +26,27 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
             expect(task.playerId).toEqual('player-a')
             expect(task.id).toEqual(id)
             expect(task.deadline).toEqual('2018-11-05T11:59:59Z')
+            expect(task.parentRecurringTaskId).toEqual('some-recurring-task')
+            expect(task.createdAt).toEqual(now)
           })
         )
     )
 
     it('updates tasks that have previously been saved', () =>
       repo
-        .saveTask({title: 'Survey ley lines', playerId: 'player-a', status: Status.INCOMPLETE})
+        .saveTask({
+          title: 'Survey ley lines',
+          playerId: 'player-a',
+          status: Status.INCOMPLETE,
+          createdAt: now,
+        })
         .then(id =>
           repo.saveTask({
             id,
             title: 'Document ley lines',
             playerId: 'player-a',
-            status: Status.INCOMPLETE
+            status: Status.INCOMPLETE,
+            createdAt: now,
           })
           .then(newId => expect(newId).toEqual(id))
           .then(() => repo.findTask(id))
@@ -63,22 +75,26 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
           .saveTask({
             title: 'Survey ley lines',
             playerId: 'player-a',
-            status: Status.INCOMPLETE
+            status: Status.INCOMPLETE,
+            createdAt: now,
           })
           .then(() => repo.saveTask({
             title: 'Collect reagents',
             playerId: 'player-a',
-            status: Status.INCOMPLETE
+            status: Status.INCOMPLETE,
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Tame gryphon',
             playerId: 'player-b',
-            status: Status.INCOMPLETE
+            status: Status.INCOMPLETE,
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Delve dungeon',
             playerId: 'player-b',
-            status: Status.INCOMPLETE
+            status: Status.INCOMPLETE,
+            createdAt: now,
           }))
       )
 
@@ -104,36 +120,42 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
             title: 'Task with no deadline',
             playerId: 'player-a',
             status: Status.INCOMPLETE,
+            createdAt: now,
           })
           .then(() => repo.saveTask({
             title: 'Incomplete task with deadline in the past',
             playerId: 'player-a',
             status: Status.INCOMPLETE,
             deadline: '2018-11-05T11:59:59Z',
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Completed task with deadline in the past',
             playerId: 'player-a',
             status: Status.COMPLETE,
             deadline: '2018-11-05T11:59:59Z',
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Overdue task with deadline in the past',
             playerId: 'player-a',
             status: Status.OVERDUE,
             deadline: '2018-11-05T11:59:59Z',
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Incomplete task with deadline right now',
             playerId: 'player-a',
             status: Status.INCOMPLETE,
             deadline: '2018-11-05T12:00:00Z',
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Incomplete task with deadline in the future',
             playerId: 'player-a',
             status: Status.INCOMPLETE,
             deadline: '2018-11-05T12:00:01Z',
+            createdAt: now,
           }))
       )
 
@@ -160,21 +182,25 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
             title: 'Incomplete task',
             playerId: 'player-a',
             status: Status.INCOMPLETE,
+            createdAt: now,
           })
           .then(() => repo.saveTask({
             title: 'Incomplete task for a different player',
             playerId: 'player-b',
             status: Status.INCOMPLETE,
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Completed task',
             playerId: 'player-a',
             status: Status.COMPLETE,
+            createdAt: now,
           }))
           .then(() => repo.saveTask({
             title: 'Overdue task',
             playerId: 'player-a',
             status: Status.OVERDUE,
+            createdAt: now,
           }))
       )
 
@@ -188,6 +214,81 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
             expect(tasks).not.toContain('Completed task')
           })
       )
+    })
+
+    describe('fetching instances of recurring tasks', () => {
+      const yesterday = '2018-11-04T12:00:00'
+      const today = '2018-11-05T12:00:00'
+      const tomorrow = '2018-11-06T12:00:00'
+
+      beforeEach(() =>
+        repo
+          .saveTask({
+            title: 'Incomplete task from yesterday',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: yesterday,
+            parentRecurringTaskId: 'some-recurring-task',
+          })
+          .then(() => repo.saveTask({
+            title: 'Complete task from yesterday',
+            playerId: 'player-b',
+            status: Status.COMPLETE,
+            createdAt: yesterday,
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'Incomplete task from today',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: today,
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'Complete task from today',
+            playerId: 'player-b',
+            status: Status.COMPLETE,
+            createdAt: today,
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'Incomplete task from tomorrow',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: tomorrow,
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'Complete task from tomorrow',
+            playerId: 'player-b',
+            status: Status.COMPLETE,
+            createdAt: tomorrow,
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'Instance of a different recurring task',
+            playerId: 'player-b',
+            status: Status.COMPLETE,
+            createdAt: tomorrow,
+            parentRecurringTaskId: 'some-other-recurring-task',
+          }))
+      )
+
+      it('returns all tasks with the given parentRecurringTaskId created on or after the given time, regardless of status', () =>
+        repo.findInstancesOfRecurringTaskOnOrAfter('some-recurring-task', today)
+          .then(tasks => tasks.map(task => task.title))
+          .then(tasks => {
+            expect(tasks).toContain('Incomplete task from today')
+            expect(tasks).toContain('Complete task from today')
+            expect(tasks).toContain('Incomplete task from tomorrow')
+            expect(tasks).toContain('Complete task from tomorrow')
+
+            expect(tasks).not.toContain('Incomplete task from yesterday')
+            expect(tasks).not.toContain('Completed task from yesterday')
+            expect(tasks).not.toContain('Instance of a different recurring task')
+          })
+      )
+
     })
   })
 }

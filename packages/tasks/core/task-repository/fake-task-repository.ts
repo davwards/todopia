@@ -2,13 +2,12 @@ import { TaskRepository, Task, Status } from '../model'
 
 export function FakeTaskRepository(): TaskRepository {
   const tasks: {[taskId: string]: Task} = {}
+  const taskList = () => Object.keys(tasks).map(id => tasks[id])
 
   return {
     findTasksForPlayer(playerId: string) {
       return Promise.resolve(
-        Object.keys(tasks)
-          .map(id => tasks[id])
-          .filter(task => task.playerId === playerId)
+        taskList().filter(task => task.playerId === playerId)
       )
     },
 
@@ -26,8 +25,7 @@ export function FakeTaskRepository(): TaskRepository {
 
     findExpiredTasks(now: string) {
       return Promise.resolve(
-        Object.keys(tasks)
-          .map(id => tasks[id])
+        taskList()
           .filter(task => new Date(task.deadline) < new Date(now))
           .filter(task => task.status === Status.INCOMPLETE)
       )
@@ -35,11 +33,25 @@ export function FakeTaskRepository(): TaskRepository {
 
     findAllCompletableTasksForPlayer(playerId: string) {
       return Promise.resolve(
-        Object.keys(tasks)
-          .map(id => tasks[id])
+        taskList()
           .filter(task => task.playerId === playerId)
           .filter(task => task.status !== Status.COMPLETE)
       )
-    }
+    },
+
+    findInstancesOfRecurringTaskOnOrAfter(
+      recurringTaskId: string,
+      time: string,
+    ) {
+      return Promise.resolve(taskList()
+        .filter(task => task.parentRecurringTaskId === recurringTaskId)
+        .filter(task => atOrAfter(task.createdAt, time))
+      )
+    },
+
   }
 }
+
+
+const atOrAfter = (a: string, b: string) =>
+  new Date(a).getTime() >= new Date(b).getTime()

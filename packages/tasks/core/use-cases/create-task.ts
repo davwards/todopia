@@ -16,7 +16,8 @@ export const createTask = (
     playerId,
     title,
     status: Status.INCOMPLETE,
-    deadline
+    deadline,
+    createdAt: new Date().toISOString(),
   })
 
 )

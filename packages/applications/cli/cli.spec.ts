@@ -209,33 +209,38 @@ describe('Todopia CLI', () => {
           id: 'task-1',
           playerId: 'player-a',
           title: 'Completed Task',
-          status: Status.COMPLETE
+          status: Status.COMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         })
         .then(() => taskRepository.saveTask({
           id: 'task-2',
           playerId: 'player-a',
           title: 'First Incomplete Task',
-          status: Status.INCOMPLETE
+          status: Status.INCOMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         }))
         .then(() => taskRepository.saveTask({
           id: 'task-3',
           playerId: 'player-a',
           title: 'Second Incomplete Task',
           deadline: '2018-11-05',
-          status: Status.INCOMPLETE
+          status: Status.INCOMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         }))
         .then(() => taskRepository.saveTask({
           id: 'task-4',
           playerId: 'player-a',
           title: 'Overdue Task',
           deadline: '2018-11-01',
-          status: Status.OVERDUE
+          status: Status.OVERDUE,
+          createdAt: '2018-11-01T00:00:00',
         }))
         .then(() => taskRepository.saveTask({
           id: 'task-5',
           playerId: 'player-b',
           title: 'Incomplete task for different player',
-          status: Status.INCOMPLETE
+          status: Status.INCOMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         }))
     )
 
@@ -265,33 +270,38 @@ describe('Todopia CLI', () => {
           id: 'task-1',
           playerId: 'player-a',
           title: 'Completed Task',
-          status: Status.COMPLETE
+          status: Status.COMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         })
         .then(() => taskRepository.saveTask({
           id: 'task-2',
           playerId: 'player-a',
           title: 'First Incomplete Task',
-          status: Status.INCOMPLETE
+          status: Status.INCOMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         }))
         .then(() => taskRepository.saveTask({
           id: 'task-3',
           playerId: 'player-a',
           title: 'Second Incomplete Task',
           deadline: '2018-11-05',
-          status: Status.INCOMPLETE
+          status: Status.INCOMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         }))
         .then(() => taskRepository.saveTask({
           id: 'task-4',
           playerId: 'player-a',
           title: 'Overdue Task',
           deadline: '2018-11-01',
-          status: Status.OVERDUE
+          status: Status.OVERDUE,
+          createdAt: '2018-11-01T00:00:00',
         }))
         .then(() => taskRepository.saveTask({
           id: 'task-5',
           playerId: 'player-b',
           title: 'Incomplete task for different player',
-          status: Status.INCOMPLETE
+          status: Status.INCOMPLETE,
+          createdAt: '2018-11-01T00:00:00',
         }))
     )
 

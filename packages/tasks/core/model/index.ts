@@ -2,8 +2,10 @@ export interface Task {
   title: string
   playerId: string
   status: Status
+  createdAt: string
   id?: string
   deadline?: string
+  parentRecurringTaskId?: string
 }
 
 export interface TaskRepository {
@@ -12,6 +14,23 @@ export interface TaskRepository {
   findTask(taskId: string): Promise<Task>
   findExpiredTasks(now: string): Promise<Task[]>
   findAllCompletableTasksForPlayer(playerId: string): Promise<Task[]>
+  findInstancesOfRecurringTaskOnOrAfter(
+    recurringTaskId: string,
+    time: string,
+  ): Promise<Task[]>
+}
+
+export interface RecurringTask {
+  title: string
+  playerId: string
+  cadence: string
+  duration?: string
+  id?: string
+}
+
+export interface RecurringTaskRepository {
+  saveRecurringTask(recurringTask: RecurringTask): Promise<string>
+  findRecurringTask(taskId: string): Promise<RecurringTask>
 }
 
 export interface AwardPrize {
@@ -20,6 +39,14 @@ export interface AwardPrize {
 
 export interface PenalizePlayer {
   (playerId: string, damage: number): Promise<void>
+}
+
+export interface FindNextOccurrence {
+  (cadence: string, currentTime: string): Promise<string>
+}
+
+export interface CalculateDeadlineFromDuration {
+  (duration: string, currentTime: string): Promise<string>
 }
 
 export enum Status {

@@ -13,12 +13,18 @@ describe('Creating tasks', () => {
 
   describe('without deadlines', () => {
     it('creates tasks with the given attributes in INCOMPLETE status', () =>
-      createTask(taskRepository)('player-a', 'Survey ley lines')
+      createTask(taskRepository)(
+        'player-a',
+        'Survey ley lines',
+      )
         .then(id => taskRepository.findTask(id))
         .then(task => {
           expect(task.title).toEqual('Survey ley lines')
           expect(task.playerId).toEqual('player-a')
           expect(task.status).toEqual(Status.INCOMPLETE)
+          expect(
+            new Date(task.createdAt).getTime()
+          ).toBeCloseTo(new Date().getTime(), -2) // within 100 ms
         })
     )
   })
