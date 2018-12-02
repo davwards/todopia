@@ -108,24 +108,6 @@ describe('spawnRecurringTasks', () => {
       )
     })
   })
-  // given there is a recurring task whose next occurrence is in the future
-  // when recurring tasks spawn
-  // then that recurring task does not spawn
-
-  // given there is a recurring task whose next occurrence is in the past
-  // and there is already an instance of that task at that time
-  // when recurring tasks spawn
-  // then that recurring task does not spawn
-
-  // given there is a recurring task whose next occurrence is in the past
-  // and there is already an instance of that task after that time
-  // when recurring tasks spawn
-  // then that recurring task does not spawn
-
-  // given there is a recurring task whose next occurrence is in the past
-  // and there is no instance of that task at or after that time
-  // when recurring tasks spawn
-  // then that recurring task spawns a task
 
   const adjustedDate = (baseDate: string, adjustment: number) => {
     const date = new Date(baseDate)
