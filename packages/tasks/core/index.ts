@@ -5,7 +5,8 @@ export {
   RecurringTask,
   RecurringTaskRepository,
   AwardPrize,
-  PenalizePlayer
+  PenalizePlayer,
+  FindNextOccurrence,
 } from './model'
 
 export { createTask } from './use-cases/create-task'
@@ -18,3 +19,5 @@ export { taskRepositoryContract } from './task-repository/task-repository.contra
 
 export { recurringTaskRepositoryContract } from './recurring-task-repository/recurring-task-repository.contract'
 export { FakeRecurringTaskRepository } from './recurring-task-repository/fake-recurring-task-repository'
+
+export { findNextOccurrenceContract } from './cadence-interpreter/find-next-occurrence.contract'

@@ -1,0 +1,23 @@
+{
+  "name": "@todopia/rrule-plugin",
+  "version": "1.0.0",
+  "description": "Implementation of a cadence interpreter for the Todopia productivity-rpg game using the rrule npm module",
+  "main": "index.js",
+  "author": "David Edwards <david@davwards.com>",
+  "license": "Unlicensed",
+  "private": true,
+  "devDependencies": {
+    "@todopia/tasks-core": "1.0.0",
+    "@types/jest": "^23.3.9",
+    "@types/node": "^10.12.9",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.6"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "rrule": "^2.5.6"
+  }
+}
