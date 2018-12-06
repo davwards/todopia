@@ -1,4 +1,7 @@
-import { taskRepositoryContract } from '@todopia/tasks-core'
+import {
+  taskRepositoryContract,
+  recurringTaskRepositoryContract
+} from '@todopia/tasks-core'
 import { playerRepositoryContract } from '@todopia/players-core'
 import { ledgerContract } from '@todopia/players-core'
 
@@ -18,6 +21,7 @@ describe('FsBackedRepository', () => {
   })
 
   taskRepositoryContract(() => FsBackedRepository(folder))
+  recurringTaskRepositoryContract(() => FsBackedRepository(folder))
   playerRepositoryContract(() => FsBackedRepository(folder))
   ledgerContract(() => FsBackedRepository(folder))
 

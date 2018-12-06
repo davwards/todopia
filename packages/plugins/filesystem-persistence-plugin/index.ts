@@ -1,7 +1,7 @@
 import {
   Task,
-  TaskRepository,
   Status,
+  RecurringTask,
 } from '@todopia/tasks-core'
 
 import {
@@ -29,6 +29,8 @@ export const FsBackedRepository = (
   const emptyStateFor = (file: string) => {
     switch(file) {
       case 'tasks':
+        return {}
+      case 'recurring-tasks':
         return {}
       case 'players':
         return {}
@@ -95,6 +97,26 @@ export const FsBackedRepository = (
           .filter(task => task.playerId === playerId)
           .filter(task => task.status !== Status.COMPLETE)
         ),
+
+    saveRecurringTask: (recurringTask: RecurringTask) => {
+      const id = recurringTask.id
+        || Math.round(Math.random() * 100000).toString()
+
+      return read('recurring-tasks')
+        .then(tasks => {
+          tasks[id] = Object.assign({}, recurringTask, {id})
+          return write('recurring-tasks', tasks)
+        })
+        .then(() => id)
+    },
+
+    findRecurringTask: (taskId: string) =>
+      read('recurring-tasks')
+        .then(tasks => tasks[taskId])
+        .then(task => {
+          if(task) return task
+          throw `No recurring task found with id: ${taskId}`
+        }),
 
     savePlayer: (player: Player) => {
       const id = player.id
