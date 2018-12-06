@@ -21,3 +21,4 @@ export { recurringTaskRepositoryContract } from './recurring-task-repository/rec
 export { FakeRecurringTaskRepository } from './recurring-task-repository/fake-recurring-task-repository'
 
 export { findNextOccurrenceContract } from './cadence-interpreter/find-next-occurrence.contract'
+export { calculateDeadlineFromDuration } from './cadence-interpreter/calculate-deadline-from-duration'
