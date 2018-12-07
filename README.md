@@ -45,6 +45,8 @@ I haven't created a nice usage guide for the CLI yet, but here are some commands
 
 `task create "Visit the underworld" --deadline 2019-11-05T12:15:00` will create a task titled "Visit the underworld" due on November 5, 2019, at 12:15pm local time.
 
+`task create "Get in trouble" --daily` will create a recurring task titled "Get in trouble" that will reappear in your todo list every 24 hours.
+
 `task list` will show you all the tasks which the currently logged in player needs to complete.
 
 `task complete` will show you your task list and let you choose one to mark as completed. Run `player info` to see how your stats have changed afterward!
