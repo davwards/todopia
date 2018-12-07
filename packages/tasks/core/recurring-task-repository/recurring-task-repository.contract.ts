@@ -60,5 +60,43 @@ export function recurringTaskRepositoryContract(getRepo: () => RecurringTaskRepo
           })
       )
     })
+
+    describe('fetching recurring tasks for a player', () => {
+      beforeEach(() =>
+        repo
+          .saveRecurringTask({
+            title: 'player-a task 1',
+            playerId: 'player-a',
+            cadence: 'RRULE:FREQ=DAILY;INTERVAL=2',
+            duration: 'P1D'
+          })
+          .then(() =>
+            repo.saveRecurringTask({
+              title: 'player-a task 2',
+              playerId: 'player-a',
+              cadence: 'RRULE:FREQ=DAILY;INTERVAL=2',
+              duration: 'P1D'
+            })
+          )
+          .then(() =>
+            repo.saveRecurringTask({
+              title: 'player-b task 1',
+              playerId: 'player-b',
+              cadence: 'RRULE:FREQ=DAILY;INTERVAL=2',
+              duration: 'P1D'
+            })
+          )
+      )
+
+      it('returns all recurring tasks with the given player id', () =>
+        repo.findRecurringTasksForPlayer('player-a')
+          .then(tasks => tasks.map(task => task.title))
+          .then(titles =>{
+            expect(titles).toContain('player-a task 1')
+            expect(titles).toContain('player-a task 2')
+            expect(titles).not.toContain('player-b task 1')
+          })
+      )
+    })
   })
 }

@@ -31,6 +31,7 @@ export interface RecurringTask {
 export interface RecurringTaskRepository {
   saveRecurringTask(recurringTask: RecurringTask): Promise<string>
   findRecurringTask(taskId: string): Promise<RecurringTask>
+  findRecurringTasksForPlayer(playerId: string): Promise<RecurringTask[]>
 }
 
 export interface AwardPrize {

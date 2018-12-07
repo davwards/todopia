@@ -13,6 +13,12 @@ export const FakeRecurringTaskRepository = (): RecurringTaskRepository => {
     findRecurringTask: (taskId: string) =>
       recurringTasks[taskId]
         ? Promise.resolve(recurringTasks[taskId])
-        : Promise.reject(`No recurring task found with id: ${taskId}`)
+        : Promise.reject(`No recurring task found with id: ${taskId}`),
+
+    findRecurringTasksForPlayer: (playerId: string) => Promise.resolve(
+      Object.keys(recurringTasks)
+        .map(id => recurringTasks[id])
+        .filter(task => task.playerId === playerId)
+    )
   }
 }

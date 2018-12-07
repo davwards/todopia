@@ -118,6 +118,13 @@ export const FsBackedRepository = (
           throw `No recurring task found with id: ${taskId}`
         }),
 
+    findRecurringTasksForPlayer: (playerId: string) =>
+      read('recurring-tasks')
+        .then(tasks => Object.keys(tasks).map(id => tasks[id]))
+        .then(tasks => tasks.filter(task =>
+          task.playerId === playerId
+        )),
+
     savePlayer: (player: Player) => {
       const id = player.id
         || Math.round(Math.random() * 10000000).toString()
