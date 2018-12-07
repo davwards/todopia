@@ -30,9 +30,8 @@ export const spawnRecurringTasks = (
           now
         ).then(instances => instances.length > 0
           ? null
-          : durationInterpreter(recurringTask.duration, now)
-          .then(deadline => taskRepository.saveTask({
-            deadline,
+          : taskRepository.saveTask({
+            deadline: durationInterpreter(recurringTask.duration, now),
             title: recurringTask.title,
             playerId: recurringTask.playerId,
             status: Status.INCOMPLETE,
@@ -40,7 +39,7 @@ export const spawnRecurringTasks = (
             createdAt: now,
           }))
         )
-    ))
+    )
 
 )
 

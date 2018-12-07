@@ -47,7 +47,7 @@ export interface FindNextOccurrence {
 }
 
 export interface CalculateDeadlineFromDuration {
-  (duration: string, currentTime: string): Promise<string>
+  (duration: string, currentTime: string): string
 }
 
 export enum Status {

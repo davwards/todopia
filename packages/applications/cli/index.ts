@@ -1,4 +1,10 @@
-import { TaskRepository, Status, Task } from '@todopia/tasks-core'
+import {
+  TaskRepository,
+  RecurringTaskRepository,
+  Status,
+  Task,
+  RecurringTask,
+} from '@todopia/tasks-core'
 import { PlayerRepository, Ledger } from '@todopia/players-core'
 import { Session } from './model'
 
@@ -19,6 +25,8 @@ export const Cli = (inj: {
   updateWorld: (currentTime: string) => Promise<any>,
 
   taskRepository: TaskRepository,
+
+  recurringTaskRepository: RecurringTaskRepository,
 
   playerRepository: PlayerRepository,
 
@@ -77,6 +85,18 @@ export const Cli = (inj: {
 
     if(argv[0] === 'task') {
       if(argv[1] === 'create') {
+        if(argv[3] === '--daily') {
+          return inj.session.currentPlayer()
+            .then(playerId =>
+              inj.recurringTaskRepository.saveRecurringTask({
+                playerId,
+                title: argv[2],
+                cadence: `DTSTART:${formatDateForRRule(new Date(inj.now()))}\nRRULE:FREQ=DAILY`,
+                duration: 'P1D'
+              })
+            )
+        }
+
         return inj.session.currentPlayer()
           .then(playerId => argv[3] === '--deadline'
             ? inj.createTask(playerId, argv[2], argv[4])
@@ -86,14 +106,23 @@ export const Cli = (inj: {
 
       if(argv[1] === 'list') {
         return inj.session.currentPlayer()
-          .then(playerId =>
-            inj.taskRepository
-              .findAllCompletableTasksForPlayer(playerId)
-          )
-          .then(tasks => {
+          .then(playerId => Promise.all([
+              inj.taskRepository
+                .findAllCompletableTasksForPlayer(playerId),
+              inj.recurringTaskRepository
+                .findRecurringTasksForPlayer(playerId)
+          ]))
+          .then(([tasks, recurringTasks]) => {
             inj.ui.print('')
-            tasks.forEach(task => inj.ui.print(displayTask(task)))
+            inj.ui.print('=== One-time tasks: ====')
+            tasks
+              .map(displayTask)
+              .forEach(task => inj.ui.print(task))
             inj.ui.print('')
+            inj.ui.print('=== Recurring tasks: ===')
+            recurringTasks
+              .map(displayRecurringTask)
+              .forEach(task => inj.ui.print(task))
           })
       }
 
@@ -121,3 +150,11 @@ const displayTask = (task: Task) =>
     task.deadline ? ` (due ${task.deadline})` : '',
     task.status === Status.OVERDUE ? '!!' : '',
   ].join('')
+
+const displayRecurringTask = (task: RecurringTask) =>
+  task.cadence.endsWith('FREQ=DAILY')
+    ? `${task.title} (daily)`
+    : task.title
+
+const formatDateForRRule = (date: Date) =>
+  date.toISOString().replace(/\..*/,'').replace(/[-:]/g,'')

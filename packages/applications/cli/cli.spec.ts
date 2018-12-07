@@ -3,13 +3,15 @@ import { Cli } from '.'
 import {
   FakeTaskRepository,
   TaskRepository,
-  Status
+  FakeRecurringTaskRepository,
+  RecurringTaskRepository,
+  Status,
 } from '@todopia/tasks-core'
 
 import {
   PlayerRepository,
   FakePlayerRepository,
-  Ledger
+  Ledger,
 } from '@todopia/players-core'
 
 describe('Todopia CLI', () => {
@@ -19,6 +21,7 @@ describe('Todopia CLI', () => {
   let session
   let updateWorld
   let taskRepository: TaskRepository
+  let recurringTaskRepository: RecurringTaskRepository
   let playerRepository: PlayerRepository
   let ledger: Ledger
   let now
@@ -32,6 +35,7 @@ describe('Todopia CLI', () => {
     updateWorld = jest.fn(() => Promise.resolve())
 
     taskRepository = FakeTaskRepository()
+    recurringTaskRepository = FakeRecurringTaskRepository()
     playerRepository = FakePlayerRepository()
     ledger = {
       currentStateFor: jest.fn(),
@@ -57,6 +61,7 @@ describe('Todopia CLI', () => {
       completeTask,
       updateWorld,
       taskRepository,
+      recurringTaskRepository,
       playerRepository,
       ledger,
       ui,
@@ -202,6 +207,29 @@ describe('Todopia CLI', () => {
     })
   })
 
+  describe('creating a daily task', () => {
+    it('creates a recurring task with the given fields for the logged in player', () =>
+      cli(['task', 'create', 'Survey ley lines', '--daily'])
+        .then(() =>
+          recurringTaskRepository.findRecurringTasksForPlayer('player-a')
+        )
+        .then(tasks => {
+          const task = tasks.find(t => t.title === 'Survey ley lines')
+
+          expect(task).toBeTruthy()
+          expect(task.cadence).toEqual('DTSTART:20181105T125959\nRRULE:FREQ=DAILY')
+          expect(task.duration).toEqual('P1D')
+        })
+    )
+
+    it('updates the world', () =>
+      cli(['task', 'create', 'Survey ley lines', '--daily'])
+        .then(() =>
+          expect(updateWorld).toHaveBeenCalledWith(now)
+        )
+    )
+  })
+
   describe('listing tasks', () => {
     beforeEach(() =>
       taskRepository
@@ -242,6 +270,18 @@ describe('Todopia CLI', () => {
           status: Status.INCOMPLETE,
           createdAt: '2018-11-01T00:00:00',
         }))
+        .then(() => recurringTaskRepository.saveRecurringTask({
+          playerId: 'player-a',
+          title: 'Recurring task for matching player',
+          cadence: 'DTSTART:20181105T000000\nRRULE:FREQ=DAILY',
+          duration: 'P1D'
+        }))
+        .then(() => recurringTaskRepository.saveRecurringTask({
+          playerId: 'player-b',
+          title: 'Recurring task for different player',
+          cadence: 'DTSTART:20181105T000000\nRRULE:FREQ=DAILY',
+          duration: 'P1D'
+        }))
     )
 
     it('prints not-completed tasks for the logged in player', () =>
@@ -252,6 +292,14 @@ describe('Todopia CLI', () => {
           expect(ui.print).toHaveBeenCalledWith('Overdue Task (due 2018-11-01)!!')
           expect(ui.print).not.toHaveBeenCalledWith('Completed Task')
           expect(ui.print).not.toHaveBeenCalledWith('Incomplete task for a different player')
+        })
+    )
+
+    it('prints recurring tasks for the logged in player', () =>
+      cli(['task', 'list'])
+        .then(() => {
+          expect(ui.print).toHaveBeenCalledWith('Recurring task for matching player (daily)')
+          expect(ui.print).not.toHaveBeenCalledWith('Recurring task for different player (daily)')
         })
     )
 

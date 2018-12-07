@@ -12,6 +12,8 @@ import {
   createTask,
   completeTask,
   checkDeadlines,
+  spawnRecurringTasks,
+  calculateDeadlineFromDuration,
 } from '@todopia/tasks-core'
 
 import {
@@ -24,6 +26,8 @@ import {
   awardPlayerWithCurrency,
   damagePlayer,
 } from '@todopia/tasks-player-currency-plugin'
+
+import { RRulePlugin } from '@todopia/rrule-plugin'
 
 import { updateWorld } from '../update-world'
 
@@ -73,11 +77,19 @@ Cli({
     ),
     resurrectPlayer: resurrectPlayer(persistence),
     levelUp: levelUp(persistence),
-    playerRepository: persistence 
+    spawnRecurringTasks: spawnRecurringTasks(
+      persistence,
+      persistence,
+      RRulePlugin().findNextOccurrence,
+      calculateDeadlineFromDuration,
+    ),
+    playerRepository: persistence,
+    recurringTaskRepository: persistence,
   }),
 
   /* Repositories and other persistence: */
   taskRepository: persistence,
+  recurringTaskRepository: persistence,
   playerRepository: persistence,
   ledger: persistence,
 

@@ -127,7 +127,7 @@ describe('spawnRecurringTasks', () => {
   const fakeDurationInterpreter = (
     duration: string,
     currentTime: string,
-  ) => Promise.resolve(`calculated deadline for: ${duration}`)
+  ) => `calculated deadline for: ${duration}`
   
   function itDoesNotSpawnANewInstanceOfTheRecurringTask() {
     it('does not spawn a new instance of the recurring task', () =>
