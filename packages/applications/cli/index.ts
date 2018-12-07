@@ -114,15 +114,26 @@ export const Cli = (inj: {
           ]))
           .then(([tasks, recurringTasks]) => {
             inj.ui.print('')
+
             inj.ui.print('=== One-time tasks: ====')
-            tasks
-              .map(displayTask)
-              .forEach(task => inj.ui.print(task))
+            if(tasks.length === 0) {
+              inj.ui.print('(none)')
+            } else {
+              tasks
+                  .map(displayTask)
+                  .forEach(task => inj.ui.print(task))
+            }
             inj.ui.print('')
+
             inj.ui.print('=== Recurring tasks: ===')
-            recurringTasks
-              .map(displayRecurringTask)
-              .forEach(task => inj.ui.print(task))
+            if(recurringTasks.length === 0) {
+              inj.ui.print('(none)')
+            } else {
+              recurringTasks
+                .map(displayRecurringTask)
+                .forEach(task => inj.ui.print(task))
+            }
+            inj.ui.print('')
           })
       }
 
