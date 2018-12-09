@@ -49,6 +49,20 @@ export function FakeTaskRepository(): TaskRepository {
       )
     },
 
+    findLastInstanceOfRecurringTask(recurringTaskId: string) {
+      return Promise.resolve(
+        taskList()
+          .filter(task => task.parentRecurringTaskId === recurringTaskId)
+      ).then(tasks =>
+        tasks.length === 0
+          ? undefined
+          : tasks.reduce((latestTask, nextTask) =>
+              new Date(latestTask.createdAt) > new Date(nextTask.createdAt)
+                ? latestTask
+                : nextTask
+            )
+      )
+    }
   }
 }
 

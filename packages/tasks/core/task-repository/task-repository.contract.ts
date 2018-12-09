@@ -288,7 +288,58 @@ export function taskRepositoryContract(getRepo: () => TaskRepository) {
             expect(tasks).not.toContain('Instance of a different recurring task')
           })
       )
+    })
 
+    describe('fetching the latest instance of a recurring tasks', () => {
+      beforeEach(() =>
+        repo
+          .saveTask({
+            title: 'instance of the wrong recurring task',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: '2018-12-01T00:00:00',
+            parentRecurringTaskId: 'some-other-recurring-task',
+          })
+          .then(() => repo.saveTask({
+            title: 'earlier instance of the right recurring task',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: '2018-01-01T00:00:00',
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'latest instance of the right recurring task',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: '2018-11-01T00:00:00',
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+          .then(() => repo.saveTask({
+            title: 'early instance of the right recurring task',
+            playerId: 'player-a',
+            status: Status.INCOMPLETE,
+            createdAt: '2018-06-01T00:00:00',
+            parentRecurringTaskId: 'some-recurring-task',
+          }))
+      )
+
+      it('returns the last instance of the recurring task', () =>
+        repo.findLastInstanceOfRecurringTask('some-recurring-task')
+          .then(task => {
+            expect(task.title).toEqual('latest instance of the right recurring task')
+            expect(task.playerId).toEqual('player-a')
+            expect(task.status).toEqual(Status.INCOMPLETE)
+            expect(task.createdAt).toEqual('2018-11-01T00:00:00')
+            expect(task.parentRecurringTaskId).toEqual('some-recurring-task')
+          })
+      )
+
+      it('returns undefined when no instances of the recurring task exist', () =>
+        repo.findLastInstanceOfRecurringTask('recurring-task-with-no-instances')
+          .then(task => {
+            expect(task).toBeUndefined()
+          })
+      )
     })
   })
 }

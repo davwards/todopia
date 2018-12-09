@@ -177,6 +177,20 @@ export const FsBackedRepository = (
           )
         ),
 
+    findLastInstanceOfRecurringTask: (recurringTaskId: string) =>
+      read('tasks')
+        .then(tasks => Object.keys(tasks).map(id => tasks[id]))
+        .then(tasks => tasks .filter(
+          task => task.parentRecurringTaskId === recurringTaskId)
+        ).then(tasks =>
+          tasks.length === 0
+            ? undefined
+            : tasks.reduce((latestTask, nextTask) =>
+                new Date(latestTask.createdAt) > new Date(nextTask.createdAt)
+                  ? latestTask
+                  : nextTask
+              )
+        )
   }
 
 }

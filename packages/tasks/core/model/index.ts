@@ -18,6 +18,9 @@ export interface TaskRepository {
     recurringTaskId: string,
     time: string,
   ): Promise<Task[]>
+  findLastInstanceOfRecurringTask(
+    recurringTaskId: string
+  ): Promise<Task>
 }
 
 export interface RecurringTask {
