@@ -2,8 +2,9 @@ import { FindNextOccurrence } from '../model'
 
 export function findNextOccurrenceContract(
   getInterpreter: () => FindNextOccurrence,
-  givenACadenceAndItsNextOccurrenceAfterABaseTime: () => {
+  exampleCadence: () => {
     cadence: string
+    firstOccurrence: string
     baseTime: string
     nextOccurrence: string
   }
@@ -13,10 +14,16 @@ export function findNextOccurrenceContract(
   let cadence: string
   let baseTime: string
   let nextOccurrence: string
+  let firstOccurrence: string
 
   beforeEach(() => {
-    ({ cadence, baseTime, nextOccurrence } =
-      givenACadenceAndItsNextOccurrenceAfterABaseTime())
+    ({
+      cadence,
+      baseTime,
+      nextOccurrence,
+      firstOccurrence,
+    } = exampleCadence())
+
     interpreter = getInterpreter()
   })
 
@@ -35,6 +42,13 @@ export function findNextOccurrenceContract(
       interpreter(cadence, nextOccurrence)
         .then(result => {
           expect(result).toEqual(nextOccurrence)
+        })
+    )
+
+    it('returns the first occurrence when no base time is given', () =>
+      interpreter(cadence)
+        .then(result => {
+          expect(result).toEqual(firstOccurrence)
         })
     )
   })

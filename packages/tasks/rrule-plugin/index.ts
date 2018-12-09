@@ -1,9 +1,11 @@
 import { rrulestr } from 'rrule'
 
 export const RRulePlugin = () => ({
-  findNextOccurrence: (cadence: string, baseTime: string) =>
+  findNextOccurrence: (cadence: string, baseTime?: string) =>
     Promise.resolve(getLocalDateString(
-      rrulestr(cadence).after(new Date(baseTime), true)
+      baseTime
+        ? rrulestr(cadence).after(new Date(baseTime), true)
+        : rrulestr(cadence).all((_,i) => i < 1)[0]
     ))
 })
 

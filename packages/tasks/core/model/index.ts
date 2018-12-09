@@ -43,7 +43,7 @@ export interface PenalizePlayer {
 }
 
 export interface FindNextOccurrence {
-  (cadence: string, currentTime: string): Promise<string>
+  (cadence: string, currentTime?: string): Promise<string>
 }
 
 export interface CalculateDeadlineFromDuration {

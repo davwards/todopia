@@ -8,6 +8,7 @@ describe('rrule plugin', () => {
       cadence: `DTSTART:${formatDateForRRule(new Date('2018-11-05T00:00:00'))}\nRRULE:FREQ=DAILY`,
       baseTime: '2018-11-05T00:00:01',
       nextOccurrence: '2018-11-06T00:00:00',
+      firstOccurrence: '2018-11-05T00:00:00'
     })
   )
 
