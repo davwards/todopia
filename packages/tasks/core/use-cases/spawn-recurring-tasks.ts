@@ -2,6 +2,7 @@ import {
   TaskRepository,
   RecurringTaskRepository,
   RecurringTask,
+  Task,
   FindNextOccurrence,
   CalculateDeadlineFromDuration,
   Status,
@@ -9,9 +10,9 @@ import {
 
 export const spawnRecurringTasks = (
 
-  taskRepository: TaskRepository,
-  recurringTaskRepository: RecurringTaskRepository,
-  cadenceInterpreter: FindNextOccurrence,
+  taskRepo: TaskRepository,
+  recurringTaskRepo: RecurringTaskRepository,
+  findNextOccurrence: FindNextOccurrence,
   durationInterpreter: CalculateDeadlineFromDuration,
 
 ) => (
@@ -21,47 +22,44 @@ export const spawnRecurringTasks = (
 
 ) => (
 
-  recurringTaskRepository
-    .findRecurringTask(recurringTaskId)
-    .then(ifRecurringTaskIsDueToSpawn(cadenceInterpreter, now,
-      recurringTask => 
-        taskRepository.findInstancesOfRecurringTaskOnOrAfter(
-          recurringTask.id,
-          now
-        ).then(instances => instances.length > 0
-          ? null
-          : taskRepository.saveTask({
-            deadline: durationInterpreter(recurringTask.duration, now),
-            title: recurringTask.title,
-            playerId: recurringTask.playerId,
-            status: Status.INCOMPLETE,
-            parentRecurringTaskId: recurringTaskId,
-            createdAt: now,
-          }))
-        )
-    )
+  recurringTaskRepo.findRecurringTask(recurringTaskId)
+    .then(ifRecurringTaskShouldSpawn(taskRepo, findNextOccurrence, now,
+      recurringTask => taskRepo.saveTask({
+        deadline: durationInterpreter(recurringTask.duration, now),
+        title: recurringTask.title,
+        playerId: recurringTask.playerId,
+        status: Status.INCOMPLETE,
+        parentRecurringTaskId: recurringTaskId,
+        createdAt: now,
+      })
+    ))
 
 )
 
 
-const ifRecurringTaskIsDueToSpawn = (
+const ifRecurringTaskShouldSpawn = (
 
-  cadenceInterpreter: FindNextOccurrence,
+  taskRepo: TaskRepository,
+  findNextOccurrence: FindNextOccurrence,
   now: string,
   fn: (recurringTask: RecurringTask) => Promise<any>
 
 ) => (
 
   recurringTask: RecurringTask
-  
-) => (
-  
-  cadenceInterpreter(recurringTask.cadence, now)
-    .then(nextOccurrence =>
-      new Date(nextOccurrence) <= new Date(now)
-    ).then(shouldSpawn => shouldSpawn
-      ? fn(recurringTask)
-      : Promise.resolve()
-    )
 
-)
+) => taskRepo
+  .findLastInstanceOfRecurringTask(recurringTask.id)
+  .then(lastInstance => {
+    if(lastInstance && lastInstance.status !== Status.COMPLETE)
+      return false
+
+    return findNextOccurrence(
+      recurringTask.cadence,
+      lastInstance ? lastInstance.createdAt : undefined
+    ).then(nextOccurrence =>
+      new Date(nextOccurrence) <= new Date(now)
+    )
+  })
+  .then(shouldSpawn => shouldSpawn ? fn(recurringTask) : null)
+
