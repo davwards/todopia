@@ -38,10 +38,12 @@ export function findNextOccurrenceContract(
         })
     )
 
-    it('returns the base time when the next occurrence is exactly on the base time', () =>
+    it('returns the next occurrence when an occurrence is given as the base time', () =>
       interpreter(cadence, nextOccurrence)
         .then(result => {
-          expect(result).toEqual(nextOccurrence)
+          expect(
+            new Date(result).getTime()
+          ).toBeGreaterThan(new Date(nextOccurrence).getTime())
         })
     )
 
